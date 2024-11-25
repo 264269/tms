@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,17 +28,15 @@ public class Comment {
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "task_id")
-    @JsonBackReference
+    @JoinColumn(name = "task")
     private Task task;
 
     @ManyToOne
-    @JoinColumn(name = "parent_comment_id")
-    @JsonBackReference
+    @JoinColumn(name = "parent_comment")
     private Comment parentComment;
 
     @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonIgnore
     private List<Comment> replies = new ArrayList<>();
 
     public void addReply(Comment reply) {

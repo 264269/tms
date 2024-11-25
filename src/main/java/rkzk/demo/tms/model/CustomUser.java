@@ -6,7 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import rkzk.demo.tms.data.SignUpRequest;
+import rkzk.demo.tms.model.persistent.Role;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -15,7 +17,7 @@ import rkzk.demo.tms.data.SignUpRequest;
 @Builder
 @Table(name = "users")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class User {
+public class CustomUser {
     @Id
     @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,9 +32,24 @@ public class User {
     @Column(name = "user_password", nullable = false)
     private String password;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id", nullable = false)
-    private Role role;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "authorities",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private List<Role> roles;
+
+    @Column(name = "enabled")
+    private boolean enabled;
+
+//    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonIgnore
+//    private List<Task> ownedTasks = new ArrayList<>();
+
+//    @OneToMany(mappedBy = "executor", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonIgnore
+//    private List<Task> assignedTasks = new ArrayList<>();
 
 //    public User(SignUpRequest signUpRequest) {
 //        this.username = signUpRequest.username();
@@ -40,12 +57,4 @@ public class User {
 //        this.password = signUpRequest.password();
 //        this.role = new Role(RoleEnum.USER);
 //    }
-
-    public void setRole(RoleEnum roleEnum) {
-        this.role = new Role(roleEnum);
-    }
-
-    public boolean checkPassword(String rawPassword) {
-        return rawPassword.equals(this.password);
-    }
 }

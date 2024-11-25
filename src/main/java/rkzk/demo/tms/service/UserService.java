@@ -1,84 +1,75 @@
 package rkzk.demo.tms.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import rkzk.demo.tms.data.SignInRequest;
 import rkzk.demo.tms.data.SignUpRequest;
-import rkzk.demo.tms.model.Role;
-import rkzk.demo.tms.model.RoleEnum;
-import rkzk.demo.tms.model.User;
+import rkzk.demo.tms.model.CustomUser;
+import rkzk.demo.tms.model.persistent.Role;
+//import rkzk.demo.tms.model.Task;
 import rkzk.demo.tms.repository.UserRepository;
+
+import java.util.List;
 
 @Service
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-//    public User create(UserCredentials userCredentials) {
-//        if (userRepository.existsByEmail(userCredentials.email()))
-//            throw new RuntimeException("User with this email already exists");
-//
-//        if (userRepository.existsByUsername(userCredentials.username()))
-//            throw new RuntimeException("User with this username already exists");
-//
-//        User user = new User(userCredentials);
-//
-//        return save(user);
-//    }
-
-    /**
-     * Создание и сохранение пользователя
-     * @param signUpRequest - логин, почта, пароль
-     * @return
-     */
-    public User create(SignUpRequest signUpRequest) {
+    public CustomUser create(SignUpRequest signUpRequest) {
         if (userRepository.existsByEmail(signUpRequest.email()))
             throw new RuntimeException("User with this email already exists");
 
         if (userRepository.existsByUsername(signUpRequest.username()))
             throw new RuntimeException("User with this username already exists");
 
-        User user = User
-                .builder()
+        String encryptedPassword = passwordEncoder.encode(signUpRequest.password());
+
+        CustomUser customUser = CustomUser.builder()
                 .username(signUpRequest.username())
                 .email(signUpRequest.email())
-                .password(signUpRequest.password())
-                .role(new Role(RoleEnum.USER))
+                .password(encryptedPassword)
+                .roles(List.of(Role.RoleEnum.USER.getRole()))
                 .build();
 
-        return save(user);
+        return save(customUser);
     }
 
-    private User save(User user) {
-        return userRepository.save(user);
+    private CustomUser save(CustomUser customUser) {
+        return userRepository.save(customUser);
     }
 
     public boolean isValidUser(SignInRequest signInRequest) {
-        User user = userRepository.findByUsername(signInRequest.username()).get();
-        return user.checkPassword(signInRequest.password());
+        return true;
     }
 
-    public User getByEmail(String email) {
+    public CustomUser getByEmail(String email) {
         return userRepository
                 .findByEmail(email)
                 .orElseThrow(
 //                        () -> new UsernameNotFoundException("Пользователь не найден")
-                        () -> new RuntimeException("User with username " + email + " not found")
-                );
+                        () -> new RuntimeException("User with username " + email + " not found"));
     }
 
-    public User getByUsername(String username) {
+    public CustomUser getUser(Long id) {
+        return userRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("Task not found"));
+    }
+
+    public CustomUser getByUsername(String username) {
         return userRepository
                 .findByUsername(username)
                 .orElseThrow(
 //                        () -> new UsernameNotFoundException("Пользователь не найден")
-                        () -> new RuntimeException("User with username " + username + " not found")
-                );
+                        () -> new RuntimeException("User with username " + username + " not found"));
     }
 
-    public void setAdmin(User user) {
-        user.setRole(RoleEnum.ADMIN);
-        save(user);
-    }
+//    public void setAdmin(User user) {
+//        user.setRole(RoleEnum.ADMIN);
+//        save(user);
+//    }
 }

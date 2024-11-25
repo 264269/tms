@@ -7,6 +7,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import rkzk.demo.tms.model.persistent.Priority;
+import rkzk.demo.tms.model.persistent.TaskStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,30 +28,33 @@ public class Task {
 
     private String title;
     private String description;
-    private Integer priority;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "status_id")
+    @JoinColumn(name = "priority")
+    private Priority priority;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "status")
     private TaskStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id")
-    private User owner;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "owner")
+//    private User owner;
+    @Column(name = "owner")
+    private Long ownerId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "executor_id")
-    private User executor;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "executor")
+//    private User executor;
+    @Column(name = "executor")
+    private Long executorId;
 
     @OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonIgnore
     private List<Comment> comments = new ArrayList<>();
 
     public void addComment(Comment reply) {
         comments.add(reply);
         reply.setTask(this);
-    }
-
-    public void setStatus(TaskStatusEnum taskStatusEnum) {
-        this.status = new TaskStatus(taskStatusEnum);
     }
 }
