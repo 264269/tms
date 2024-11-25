@@ -1,5 +1,6 @@
 package rkzk.demo.tms.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -43,13 +44,13 @@ public class CustomUser {
     @Column(name = "enabled")
     private boolean enabled;
 
-//    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JsonIgnore
-//    private List<Task> ownedTasks = new ArrayList<>();
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Task> ownedTasks;
 
-//    @OneToMany(mappedBy = "executor", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JsonIgnore
-//    private List<Task> assignedTasks = new ArrayList<>();
+    @OneToMany(mappedBy = "executor", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Task> assignedTasks;
 
 //    public User(SignUpRequest signUpRequest) {
 //        this.username = signUpRequest.username();

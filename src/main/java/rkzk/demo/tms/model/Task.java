@@ -16,7 +16,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
+//@AllArgsConstructor
 @Entity
 @Table(name = "tasks")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -37,16 +37,18 @@ public class Task {
     @JoinColumn(name = "status")
     private TaskStatus status;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "owner")
-//    private User owner;
-    @Column(name = "owner")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner")
+    @JsonIgnore
+    private CustomUser owner;
+    @Column(name = "owner", insertable = false, updatable = false)
     private Long ownerId;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "executor")
-//    private User executor;
-    @Column(name = "executor")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "executor")
+    @JsonIgnore
+    private CustomUser executor;
+    @Column(name = "executor", insertable = false, updatable = false)
     private Long executorId;
 
     @OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -56,5 +58,15 @@ public class Task {
     public void addComment(Comment reply) {
         comments.add(reply);
         reply.setTask(this);
+    }
+
+    public void setOwner(CustomUser owner) {
+        this.owner = owner;
+        ownerId = owner.getUserId();
+    }
+
+    public void setExecutor(CustomUser executor) {
+        this.executor = executor;
+        executorId = executor.getUserId();
     }
 }

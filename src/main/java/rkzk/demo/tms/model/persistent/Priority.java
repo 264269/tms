@@ -13,7 +13,7 @@ import lombok.*;
 public class Priority {
     @Id
     @Column(name = "priority_id", nullable = false, unique = true)
-    private Long roleId;
+    private Long priorityId;
 
     @Column(nullable = false, unique = true, length = 20)
     private String description;
