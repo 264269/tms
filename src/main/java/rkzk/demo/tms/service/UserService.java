@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rkzk.demo.tms.model.CustomUser;
 import rkzk.demo.tms.model.persistent.Role;
-import rkzk.demo.tms.repository.UserRepository;
+import rkzk.demo.tms.repository.CustomUserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,13 +13,13 @@ import java.util.List;
 public class UserService {
 
     @Autowired
-    private UserRepository userRepository;
+    private CustomUserRepository customUserRepository;
 
     public CustomUser create(UserCredentials userCredentials) {
-        if (userRepository.existsByEmail(userCredentials.email()))
+        if (customUserRepository.existsByEmail(userCredentials.email()))
             throw new RuntimeException("User with this email already exists");
 
-        if (userRepository.existsByUsername(userCredentials.username()))
+        if (customUserRepository.existsByUsername(userCredentials.username()))
             throw new RuntimeException("User with this username already exists");
 
         List<Role> roles = new ArrayList<>();
@@ -37,25 +37,25 @@ public class UserService {
     }
 
     private CustomUser save(CustomUser customUser) {
-        return userRepository.save(customUser);
+        return customUserRepository.save(customUser);
     }
 
     public CustomUser getByEmail(String email) {
-        return userRepository
+        return customUserRepository
                 .findByEmail(email)
                 .orElseThrow(
                         () -> new RuntimeException("User with username " + email + " not found"));
     }
 
     public CustomUser getById(Long id) {
-        return userRepository
+        return customUserRepository
                 .findById(id)
                 .orElseThrow(
                         () -> new RuntimeException("User with id " + id + " not found"));
     }
 
     public CustomUser getByUsername(String username) {
-        return userRepository
+        return customUserRepository
                 .findByUsername(username)
                 .orElseThrow(
                         () -> new RuntimeException("User with username " + username + " not found"));
