@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rkzk.demo.tms.model.CustomUser;
+import rkzk.demo.tms.service.AuthService;
 import rkzk.demo.tms.service.UserService;
 
 @RestController
@@ -15,19 +16,26 @@ import rkzk.demo.tms.service.UserService;
 public class AuthController {
 
     @Autowired
-    private UserService userService;
+    private AuthService authService;
 
     @PostMapping("/sign-up")
-    public CustomUser signUp(@RequestBody SignUpRequest request) {
-        return userService.create(new UserService.UserCredentials(
+    public JwtAuthenticationResponse signUp(@RequestBody SignUpRequest request) {
+        JwtAuthenticationResponse jwt = new JwtAuthenticationResponse(authService.signUp(new UserService.UserCredentials(
                 request.username,
                 request.email,
-                request.password));
+                request.password)));
+        return jwt;
     }
 
     @PostMapping("/sign-in")
-    public CustomUser signIn(@RequestBody SignInRequest request) {
-        return userService.getByUsername(request.username);
+    public JwtAuthenticationResponse signIn(@RequestBody SignInRequest request) {
+        JwtAuthenticationResponse jwt
+                = new JwtAuthenticationResponse(
+                        authService.signIn(new UserService.UserCredentials(
+                                request.username,
+                                null,
+                                request.password)));
+        return jwt;
     }
 
     public record SignInRequest(

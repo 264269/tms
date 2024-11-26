@@ -1,6 +1,8 @@
 package rkzk.demo.tms.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import rkzk.demo.tms.model.CustomUser;
 import rkzk.demo.tms.model.persistent.Role;
@@ -34,6 +36,10 @@ public class UserService {
                 .build();
 
         return save(customUser);
+    }
+
+    public UserDetailsService userDetailsService() {
+        return this::getByUsername;
     }
 
     private CustomUser save(CustomUser customUser) {

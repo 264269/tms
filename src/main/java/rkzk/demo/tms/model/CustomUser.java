@@ -7,8 +7,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import rkzk.demo.tms.model.persistent.Role;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Data
@@ -18,7 +23,7 @@ import java.util.List;
 @Builder
 @Table(name = "users")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class CustomUser {
+public class CustomUser implements UserDetails {
     @Id
     @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +38,7 @@ public class CustomUser {
     @Column(name = "user_password", nullable = false)
     private String password;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "authorities",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -52,10 +57,45 @@ public class CustomUser {
     @JsonIgnore
     private List<Task> assignedTasks;
 
-//    public User(SignUpRequest signUpRequest) {
-//        this.username = signUpRequest.username();
-//        this.email = signUpRequest.email();
-//        this.password = signUpRequest.password();
-//        this.role = new Role(RoleEnum.USER);
-//    }
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<SimpleGrantedAuthority> authorities;
+        authorities =
+                roles
+                        .stream()
+                        .map(role
+                                -> new SimpleGrantedAuthority(role.getDescription()))
+                        .toList();
+        return authorities;
+    }
+
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.username;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
 }

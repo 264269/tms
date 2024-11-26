@@ -3,6 +3,7 @@ package rkzk.demo.tms.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import rkzk.demo.tms.model.CustomUser;
 import rkzk.demo.tms.model.Task;
@@ -19,6 +20,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<CustomUser> getUser(@PathVariable Long id) {
         CustomUser user = userService.getById(id);
         return new ResponseEntity<>(user, HttpStatus.OK);
