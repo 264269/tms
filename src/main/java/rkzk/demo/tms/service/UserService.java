@@ -77,41 +77,41 @@ public class UserService {
         return sameId || authUser.isAdmin();
     }
 
-    public List<Task> getTasks(Long id) {
-        CustomUser user = getById(id);
-        List<Task> tasks = new ArrayList<>();
-        tasks.addAll(user.getOwnedTasks());
-        tasks.addAll(user.getAssignedTasks());
-        return tasks;
-    }
-    public List<Task> getTasksRequest(Long id) {
-        if (!checkAccessToUser(id)) {
-            throw new AccessDeniedException("You're not owning this account");
-        }
-        return getTasks(id);
-    }
+//    public List<Task> getTasks(Long id) {
+//        CustomUser user = getById(id);
+//        List<Task> tasks = new ArrayList<>();
+//        tasks.addAll(user.getOwnedTasks());
+//        tasks.addAll(user.getAssignedTasks());
+//        return tasks;
+//    }
+//    public List<Task> getTasksRequest(Long id) {
+//        if (!checkAccessToUser(id)) {
+//            throw new AccessDeniedException("You're not owning this account");
+//        }
+//        return getTasks(id);
+//    }
 
-    public List<Task> getTasksAsOwner(Long id) {
-        CustomUser user = getById(id);
-        return user.getOwnedTasks();
-    }
-    public List<Task> getTasksAsOwnerRequest(Long id) {
-        if (!checkAccessToUser(id)) {
-            throw new AccessDeniedException("You're not owning this account");
-        }
-        return getTasksAsOwner(id);
-    }
+//    public List<Task> getTasksAsOwner(Long id) {
+//        CustomUser user = getById(id);
+//        return user.getOwnedTasks();
+//    }
+//    public List<Task> getTasksAsOwnerRequest(Long id) {
+//        if (!checkAccessToUser(id)) {
+//            throw new AccessDeniedException("You're not owning this account");
+//        }
+//        return getTasksAsOwner(id);
+//    }
 
-    public List<Task> getTasksAsExecutor(Long id) {
-        CustomUser user = getById(id);
-        return user.getAssignedTasks();
-    }
-    public List<Task> getTasksAsExecutorRequest(Long id) {
-        if (!checkAccessToUser(id)) {
-            throw new AccessDeniedException("You're not owning this account");
-        }
-        return getTasksAsExecutor(id);
-    }
+//    public List<Task> getTasksAsExecutor(Long id) {
+//        CustomUser user = getById(id);
+//        return user.getAssignedTasks();
+//    }
+//    public List<Task> getTasksAsExecutorRequest(Long id) {
+//        if (!checkAccessToUser(id)) {
+//            throw new AccessDeniedException("You're not owning this account");
+//        }
+//        return getTasksAsExecutor(id);
+//    }
 
 //    @Schema(description = "Данные пользователя")
     public record UserCredentials (

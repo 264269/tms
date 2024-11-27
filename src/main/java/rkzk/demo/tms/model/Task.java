@@ -64,8 +64,21 @@ public class Task {
         ownerId = owner.getUserId();
     }
 
+    public void updateOwner() {
+        ownerId = owner.getUserId();
+    }
+
     public void setExecutor(CustomUser executor) {
         this.executor = executor;
         executorId = executor.getUserId();
+    }
+
+    public void updateExecutor() {
+        executorId = executor.getUserId();
+    }
+
+    public void update() {
+        updateExecutor();
+        updateOwner();
     }
 }

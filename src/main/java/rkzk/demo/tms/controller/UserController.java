@@ -23,21 +23,21 @@ public class UserController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}/tasks")
-    public ResponseEntity<List<Task>> getTasks(@PathVariable Long id) {
-        List<Task> tasks = userService.getTasksRequest(id);
-        return new ResponseEntity<>(tasks, HttpStatus.OK);
-    }
-
-    @GetMapping("/{id}/tasks/owner")
-    public ResponseEntity<List<Task>> getTasksAsOwner(@PathVariable Long id) {
-        List<Task> owned = userService.getTasksAsOwnerRequest(id);
-        return new ResponseEntity<>(owned, HttpStatus.OK);
-    }
-
-    @GetMapping("/{id}/tasks/executor")
-    public ResponseEntity<List<Task>> getTasksAsExecutor(@PathVariable Long id) {
-        List<Task> executing = userService.getTasksAsExecutorRequest(id);
-        return new ResponseEntity<>(executing, HttpStatus.OK);
-    }
+//    @GetMapping("/{id}/tasks")
+//    public ResponseEntity<List<Task>> getTasks(@PathVariable Long id) {
+//        List<Task> tasks = userService.getTasksRequest(id);
+//        return new ResponseEntity<>(tasks, HttpStatus.OK);
+//    }
+//
+//    @GetMapping("/{id}/tasks/owner")
+//    public ResponseEntity<List<Task>> getTasksAsOwner(@PathVariable Long id) {
+//        List<Task> owned = userService.getTasksAsOwnerRequest(id);
+//        return new ResponseEntity<>(owned, HttpStatus.OK);
+//    }
+//
+//    @GetMapping("/{id}/tasks/executor")
+//    public ResponseEntity<List<Task>> getTasksAsExecutor(@PathVariable Long id) {
+//        List<Task> executing = userService.getTasksAsExecutorRequest(id);
+//        return new ResponseEntity<>(executing, HttpStatus.OK);
+//    }
 }

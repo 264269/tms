@@ -29,11 +29,17 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id")
+    @JsonIgnore
     private Task task;
+    @Column(name = "task_id", insertable = false, updatable = false)
+    private Long taskId;
 
     @ManyToOne
     @JoinColumn(name = "parent_comment_id")
+    @JsonIgnore
     private Comment parentComment;
+    @Column(name = "parent_comment_id", insertable = false, updatable = false)
+    private Long parentCommentId;
 
     @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
@@ -42,5 +48,15 @@ public class Comment {
     public void addReply(Comment reply) {
         replies.add(reply);
         reply.setParentComment(this);
+    }
+
+    public void setTask(Task task) {
+        this.task = task;
+        this.taskId = task.getTaskId();
+    }
+
+    public void setParentComment(Comment parentComment) {
+        this.parentComment = parentComment;
+        this.parentCommentId = parentComment.parentCommentId;
     }
 }

@@ -53,13 +53,13 @@ public class CustomUser implements UserDetails {
     @JsonIgnore
     private boolean enabled;
 
-    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<Task> ownedTasks;
+//    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonIgnore
+//    private List<Task> ownedTasks;
 
-    @OneToMany(mappedBy = "executor", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<Task> assignedTasks;
+//    @OneToMany(mappedBy = "executor", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonIgnore
+//    private List<Task> assignedTasks;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
