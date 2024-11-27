@@ -15,6 +15,7 @@ import rkzk.demo.tms.model.persistent.Role;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
@@ -26,7 +27,7 @@ import java.util.List;
 public class CustomUser implements UserDetails {
     @Id
     @Column(name = "user_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long userId;
 
     @Column(nullable = false, unique = true)
@@ -70,6 +71,16 @@ public class CustomUser implements UserDetails {
                                 -> new SimpleGrantedAuthority(role.getDescription()))
                         .toList();
         return authorities;
+    }
+
+    public boolean isAdmin() {
+        for (GrantedAuthority authority : getAuthorities()) {
+            if (Objects.equals(
+                    authority.getAuthority(),
+                    Role.RoleEnum.ADMIN.getRole().getDescription()))
+                return true;
+        }
+        return false;
     }
 
     @Override

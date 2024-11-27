@@ -22,17 +22,17 @@ import java.util.List;
 public class Comment {
     @Id
     @Column(name = "comment_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long commentId;
 
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "task")
+    @JoinColumn(name = "task_id")
     private Task task;
 
     @ManyToOne
-    @JoinColumn(name = "parent_comment")
+    @JoinColumn(name = "parent_comment_id")
     private Comment parentComment;
 
     @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, orphanRemoval = true)

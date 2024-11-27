@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import rkzk.demo.tms.controller.TaskController;
 import rkzk.demo.tms.model.persistent.Priority;
 import rkzk.demo.tms.model.persistent.TaskStatus;
 
@@ -16,14 +14,15 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-//@AllArgsConstructor
+@AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "tasks")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Task {
     @Id
-    @Column(name = "task_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "task_id", nullable = false)
+    @GeneratedValue
     private Long taskId;
 
     private String title;

@@ -16,7 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import rkzk.demo.tms.security.JwtAuthenticationFilter;
-import rkzk.demo.tms.security.UserAccessFilter;
+//import rkzk.demo.tms.security.UserAccessFilter;
 import rkzk.demo.tms.service.UserService;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -29,8 +29,8 @@ public class SecurityConfig {
     private UserService userService;
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
-    @Autowired
-    private UserAccessFilter userAccessFilter;
+//    @Autowired
+//    private UserAccessFilter userAccessFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -44,8 +44,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(userAccessFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

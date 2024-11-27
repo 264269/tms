@@ -1,20 +1,19 @@
 package rkzk.demo.tms.service;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import rkzk.demo.tms.model.CustomUser;
+import rkzk.demo.tms.model.Task;
 import rkzk.demo.tms.model.persistent.Role;
 import rkzk.demo.tms.repository.CustomUserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UserService {
@@ -51,18 +50,15 @@ public class UserService {
         return customUserRepository.save(customUser);
     }
 
-    public CustomUser getByEmail(String email) {
-        return customUserRepository
-                .findByEmail(email)
-                .orElseThrow(
-                        () -> new RuntimeException("User with username " + email + " not found"));
-    }
-
     public CustomUser getById(Long id) {
-        return customUserRepository
-                .findById(id)
-                .orElseThrow(
-                        () -> new RuntimeException("User with id " + id + " not found"));
+        return customUserRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("User with id " + id + " not found"));
+    }
+    public CustomUser getByIdRequest(Long id) {
+        if (!checkAccessToUser(id)) {
+            throw new AccessDeniedException("You're not owning this account");
+        }
+        return getById(id);
     }
 
     public CustomUser getByUsername(String username) {
@@ -70,6 +66,51 @@ public class UserService {
                 .findByUsername(username)
                 .orElseThrow(
                         () -> new RuntimeException("User with username " + username + " not found"));
+    }
+
+    public boolean checkAccessToUser(Long userId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUser authUser = (CustomUser) auth.getPrincipal();
+
+        boolean sameId = Objects.equals(authUser.getUserId(), userId);
+
+        return sameId || authUser.isAdmin();
+    }
+
+    public List<Task> getTasks(Long id) {
+        CustomUser user = getById(id);
+        List<Task> tasks = new ArrayList<>();
+        tasks.addAll(user.getOwnedTasks());
+        tasks.addAll(user.getAssignedTasks());
+        return tasks;
+    }
+    public List<Task> getTasksRequest(Long id) {
+        if (!checkAccessToUser(id)) {
+            throw new AccessDeniedException("You're not owning this account");
+        }
+        return getTasks(id);
+    }
+
+    public List<Task> getTasksAsOwner(Long id) {
+        CustomUser user = getById(id);
+        return user.getOwnedTasks();
+    }
+    public List<Task> getTasksAsOwnerRequest(Long id) {
+        if (!checkAccessToUser(id)) {
+            throw new AccessDeniedException("You're not owning this account");
+        }
+        return getTasksAsOwner(id);
+    }
+
+    public List<Task> getTasksAsExecutor(Long id) {
+        CustomUser user = getById(id);
+        return user.getAssignedTasks();
+    }
+    public List<Task> getTasksAsExecutorRequest(Long id) {
+        if (!checkAccessToUser(id)) {
+            throw new AccessDeniedException("You're not owning this account");
+        }
+        return getTasksAsExecutor(id);
     }
 
 //    @Schema(description = "Данные пользователя")

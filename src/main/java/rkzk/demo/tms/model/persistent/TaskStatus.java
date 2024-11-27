@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Objects;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,6 +28,22 @@ public class TaskStatus {
         FINISHED(new TaskStatus(3L, "finished"));
 
         private final TaskStatus taskStatus;
+
+        public static TaskStatus getById(Long id) {
+            for (TaskStatusEnum taskStatusEnum : values()) {
+                if (Objects.equals(taskStatusEnum.taskStatus.statusId, id))
+                    return taskStatusEnum.taskStatus;
+            }
+            throw new IllegalArgumentException("No taskStatus with such value");
+        }
+
+        public static TaskStatus getByDescription(String description) {
+            for (TaskStatusEnum taskStatusEnum : values()) {
+                if (Objects.equals(taskStatusEnum.taskStatus.description, description))
+                    return taskStatusEnum.taskStatus;
+            }
+            throw new IllegalArgumentException("No taskStatus with such name");
+        }
     }
 }
 
