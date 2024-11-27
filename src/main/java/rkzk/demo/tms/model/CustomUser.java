@@ -22,7 +22,7 @@ import java.util.List;
 @Entity
 @Builder
 @Table(name = "users")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "accountNonExpired", "credentialsNonExpired", "accountNonLocked"})
 public class CustomUser implements UserDetails {
     @Id
     @Column(name = "user_id")
@@ -36,6 +36,7 @@ public class CustomUser implements UserDetails {
     private String username;
 
     @Column(name = "user_password", nullable = false)
+    @JsonIgnore
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -44,9 +45,11 @@ public class CustomUser implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
+    @JsonIgnore
     private List<Role> roles;
 
     @Column(name = "enabled")
+    @JsonIgnore
     private boolean enabled;
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

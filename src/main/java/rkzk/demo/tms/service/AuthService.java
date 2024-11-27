@@ -46,10 +46,6 @@ public class AuthService {
 
             UserDetails user = userService.userDetailsService().loadUserByUsername(request.username());
 
-            for (GrantedAuthority a : user.getAuthorities()) {
-                System.out.println(a.getAuthority());
-            }
-
             jwt = jwtService.generateToken(user);
         } catch (Exception e) {
             System.out.println(e);

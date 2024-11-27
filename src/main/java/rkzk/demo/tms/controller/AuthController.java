@@ -1,8 +1,11 @@
 package rkzk.demo.tms.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +21,7 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+//    @Operation(summary = "Регистрация пользователя")
     @PostMapping("/sign-up")
     public JwtAuthenticationResponse signUp(@RequestBody SignUpRequest request) {
         JwtAuthenticationResponse jwt = new JwtAuthenticationResponse(authService.signUp(new UserService.UserCredentials(
@@ -27,6 +31,7 @@ public class AuthController {
         return jwt;
     }
 
+//    @Operation(summary = "Аутентификация пользователя")
     @PostMapping("/sign-in")
     public JwtAuthenticationResponse signIn(@RequestBody SignInRequest request) {
         JwtAuthenticationResponse jwt
@@ -53,5 +58,9 @@ public class AuthController {
             @NotNull
             String password) { }
 
-    public record JwtAuthenticationResponse (String token) { }
+
+//    @Schema(description = "Ответ c токеном доступа")
+    public record JwtAuthenticationResponse (
+//            @Schema(description = "Токен доступа", example = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTYyMjUwNj...")
+            String token) { }
 }

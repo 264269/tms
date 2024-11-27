@@ -19,10 +19,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<CustomUser> getUser(@PathVariable Long id) {
-        CustomUser user = userService.getById(id);
+    @GetMapping("/{userId}")
+    public ResponseEntity<CustomUser> getUser(@PathVariable String userId) {
+        CustomUser user = userService.getById(Long.parseLong(userId));
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
