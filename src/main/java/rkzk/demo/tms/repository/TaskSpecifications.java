@@ -7,21 +7,21 @@ import rkzk.demo.tms.model.persistent.TaskStatus;
 
 public class TaskSpecifications {
 
-    public static Specification<Task> filterByOwner(Long owner) {
+    public static Specification<Task> filterByOwner(Long ownerId) {
         return (root, query, criteriaBuilder) -> {
-            if (owner == null) {
+            if (ownerId == null) {
                 return null;
             }
-            return criteriaBuilder.equal(root.get("ownerId"), owner);
+            return criteriaBuilder.equal(root.get("ownerId"), ownerId);
         };
     }
 
-    public static Specification<Task> filterByExecutor(Long executor) {
+    public static Specification<Task> filterByExecutor(Long executorId) {
         return (root, query, criteriaBuilder) -> {
-            if (executor == null) {
+            if (executorId == null) {
                 return null;
             }
-            return criteriaBuilder.equal(root.get("executorId"), executor);
+            return criteriaBuilder.equal(root.get("executorId"), executorId);
         };
     }
 

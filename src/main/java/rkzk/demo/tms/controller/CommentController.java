@@ -18,8 +18,6 @@ import rkzk.demo.tms.service.TaskService;
 public class CommentController {
     @Autowired
     private final CommentService commentService;
-    @Autowired
-    private final TaskService taskService;
 
     @GetMapping("/{id}")
     public ResponseEntity<Comment> getComment(@PathVariable Long id) {
@@ -28,7 +26,6 @@ public class CommentController {
     }
 
     public record CommentRequest(
-            String content,
-            Long parentCommentId
+            String content
     ) { }
 }

@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import rkzk.demo.tms.controller.CommentController;
 import rkzk.demo.tms.model.Comment;
 import rkzk.demo.tms.model.CustomUser;
 import rkzk.demo.tms.model.Task;
@@ -36,12 +37,13 @@ public class CommentService {
     }
 
     public Comment getById(Long id) {
-        return commentRepository.findById(id).orElseThrow(() -> new RuntimeException("Comment not found"));
+        return commentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
     }
     public Comment getByIdRequest(Long id) {
         Comment comment = getById(id);
         if (!checkAccessAsOwner(comment)) {
-            throw new AccessDeniedException("You're not owning this task");
+            throw new AccessDeniedException("You're not owning this comment");
         }
         return comment;
     }
@@ -53,5 +55,26 @@ public class CommentService {
         boolean owner = Objects.equals(comment.getOwnerId(), authUser.getUserId());
 
         return owner || authUser.isAdmin();
+    }
+
+    public Comment addComment(Comment comment) {
+        return commentRepository.save(comment);
+    }
+    public Comment addCommentRequest(Long id, CommentController.CommentRequest commentRequest) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUser user = (CustomUser) authentication.getPrincipal();
+
+        Task task = taskService.getByIdRequest(id);
+
+        Comment comment =
+                Comment.builder()
+                        .content(commentRequest.content())
+                        .task(task)
+                        .owner(user)
+                .build();
+
+        comment.update();
+
+        return addComment(comment);
     }
 }

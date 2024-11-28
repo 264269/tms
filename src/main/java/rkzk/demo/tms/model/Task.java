@@ -22,7 +22,7 @@ import java.util.List;
 public class Task {
     @Id
     @Column(name = "task_id", nullable = false)
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long taskId;
 
     private String title;

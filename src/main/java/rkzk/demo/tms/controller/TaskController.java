@@ -103,7 +103,7 @@ public class TaskController {
     public ResponseEntity<Comment> addComment(
             @RequestBody CommentController.CommentRequest commentRequest,
             @PathVariable Long id) {
-        Comment comment = taskService.addComentRequest(id, commentRequest);
+        Comment comment = commentService.addCommentRequest(id, commentRequest);
         return new ResponseEntity<>(comment, HttpStatus.OK);
     }
 
