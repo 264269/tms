@@ -5,10 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "comments")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Comment {
@@ -45,6 +43,13 @@ public class Comment {
     @JsonIgnore
     private List<Comment> replies = new ArrayList<>();
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private CustomUser owner;
+    @Column(name = "user_id", insertable = false, updatable = false)
+    private Long ownerId;
+
     public void addReply(Comment reply) {
         replies.add(reply);
         reply.setParentComment(this);
@@ -54,9 +59,29 @@ public class Comment {
         this.task = task;
         this.taskId = task.getTaskId();
     }
+    public void updateTask() {
+        taskId = task.getTaskId();
+    }
 
     public void setParentComment(Comment parentComment) {
         this.parentComment = parentComment;
         this.parentCommentId = parentComment.parentCommentId;
+    }
+    public void updateParentComment() {
+        parentCommentId = parentComment.parentCommentId;
+    }
+
+    public void setOwner(CustomUser owner) {
+        this.owner = owner;
+        this.ownerId = owner.getUserId();
+    }
+    public void updateOwner() {
+        ownerId = owner.getUserId();
+    }
+
+    public void update() {
+        updateOwner();
+        updateTask();
+        updateParentComment();
     }
 }

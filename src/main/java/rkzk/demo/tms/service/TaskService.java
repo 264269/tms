@@ -2,25 +2,26 @@ package rkzk.demo.tms.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.util.Streamable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import rkzk.demo.tms.controller.CommentController;
 import rkzk.demo.tms.controller.TaskController;
+import rkzk.demo.tms.model.Comment;
 import rkzk.demo.tms.model.CustomUser;
 import rkzk.demo.tms.model.Task;
 import rkzk.demo.tms.model.persistent.Priority;
 import rkzk.demo.tms.model.persistent.TaskStatus;
+import rkzk.demo.tms.repository.CommentRepository;
 import rkzk.demo.tms.repository.TaskRepository;
 import rkzk.demo.tms.repository.TaskSpecifications;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class TaskService {
@@ -29,6 +30,8 @@ public class TaskService {
     private TaskRepository taskRepository;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CommentRepository commentRepository;
 
     public Task getById(Long id) {
         return taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Task not found"));
@@ -65,46 +68,45 @@ public class TaskService {
         task.update();
         return taskRepository.save(task);
     }
+//    TODO: add message what changed
     public Task updateTaskRequest(TaskController.TaskRequest taskRequest, Long taskId) {
-        Task task = getById(taskId);
+        Task task = getByIdRequest(taskId);
 
         boolean isOwner = checkAccessAsOwner(task);
-        boolean isExecutor = checkAccessAsExecutor(task);
 
-        if (!isOwner && !isExecutor) {
-            throw new AccessDeniedException("You're neither executing nor owning this task");
-        }
+        if (isOwner) {
+            //set title
+            if (!Objects.isNull(taskRequest.title())) {
+                task.setTitle(taskRequest.title());
+            }
 
-        //set title
-        if (isOwner && !Objects.isNull(taskRequest.title())) {
-            task.setTitle(taskRequest.title());
-        }
+            //set description
+            if (!Objects.isNull(taskRequest.description())) {
+                task.setDescription(taskRequest.description());
+            }
 
-        //set description
-        if (isOwner && !Objects.isNull(taskRequest.description())) {
-            task.setDescription(taskRequest.description());
-        }
-
-        //set priority
-        if (isOwner)
+            //set priority
             try {
                 task.setPriority(
                         Priority.PriorityEnum.getById(
-                                taskRequest.priorityId()));
+                                taskRequest.priority()));
             } catch (Exception e) { }
+
+            //set executor
+            try {
+                task.setExecutor(
+                        userService.getById(
+                                taskRequest.executor()));
+            } catch (Exception e) { }
+        }
 
         //set status
         try {
             task.setStatus(
                     TaskStatus.TaskStatusEnum.getById(
-                            taskRequest.statusId()));
+                            taskRequest.status()));
         } catch (Exception e) { }
 
-        //set executor
-        if (isOwner)
-            try {
-                task.setExecutor(userService.getById(taskRequest.executorId()));
-            } catch (Exception e) { }
 
         return saveTask(task);
     }
@@ -112,10 +114,10 @@ public class TaskService {
         Task task = Task.builder()
                 .title(taskRequest.title())
                 .description(taskRequest.description())
-                .priority(Priority.PriorityEnum.getById(taskRequest.priorityId()))
-                .status(TaskStatus.TaskStatusEnum.getById(taskRequest.statusId()))
+                .priority(Priority.PriorityEnum.getById(taskRequest.priority()))
+                .status(TaskStatus.TaskStatusEnum.getById(taskRequest.status()))
                 .owner((CustomUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-                .executor(userService.getById(taskRequest.executorId()))
+                .executor(userService.getById(taskRequest.executor()))
                 .build();
         return saveTask(task);
     }
@@ -124,11 +126,12 @@ public class TaskService {
         taskRepository.delete(task);
     }
     public void deleteTaskRequest(Long id) {
-        Task task = getById(id);
+        Task task = getByIdRequest(id);
+
         boolean isOwner = checkAccessAsOwner(task);
 
         if (!isOwner) {
-            throw new AccessDeniedException("You're not executing this task");
+            throw new AccessDeniedException("You're not owning this task");
         }
 
         deleteTask(task);
@@ -143,14 +146,12 @@ public class TaskService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         CustomUser authUser = (CustomUser) auth.getPrincipal();
 
-        boolean ownerExecutorNotSet =
-                filter.owner() == null
-                        && filter.executor() == null;
+        boolean ownerExecutorNotSet = filter.owner() == null && filter.executor() == null;
 
 //        set owner & executor
         Long owner = filter.owner();
         Long executor = filter.executor();
-        if (ownerExecutorNotSet) {
+        if (ownerExecutorNotSet && !authUser.isAdmin()) {
             owner = authUser.getUserId();
             executor = authUser.getUserId();
         }
@@ -204,5 +205,25 @@ public class TaskService {
         boolean executor = Objects.equals(task.getExecutorId(), authUser.getUserId());
 
         return executor || authUser.isAdmin();
+    }
+
+    public void addComment(Task task, Comment comment) {
+        comment.update();
+        task.addComment(comment);
+    }
+    public Comment addComentRequest(Long id, CommentController.CommentRequest commentRequest) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUser user = (CustomUser) authentication.getPrincipal();
+        Task task = getByIdRequest(id);
+        Optional<Comment> parentComment = commentRepository.findById(commentRequest.parentCommentId());
+        Comment comment = Comment
+                .builder()
+                .content(commentRequest.content())
+                .task(task)
+                .parentComment(parentComment.get())
+                .owner(user)
+                .build();
+        addComment(task, comment);
+        return comment;
     }
 }

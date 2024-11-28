@@ -4,12 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rkzk.demo.tms.model.Comment;
 import rkzk.demo.tms.model.Task;
+import rkzk.demo.tms.service.CommentService;
 import rkzk.demo.tms.service.TaskService;
 
 import java.util.List;
@@ -21,11 +21,20 @@ public class TaskController {
 
     @Autowired
     private final TaskService taskService;
+    @Autowired
+    private final CommentService commentService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Task> getTask(@PathVariable Long id) {
+    public ResponseEntity<TaskResponse> getTask(
+            @PathVariable Long id,
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "2") Integer size) {
+//        get task
         Task task = taskService.getByIdRequest(id);
-        return new ResponseEntity<>(task, HttpStatus.OK);
+//        get task comments
+        List<Comment> comments = commentService.getByTaskRequest(id, PageRequest.of(page, size)).getContent();
+        TaskResponse taskResponse = new TaskResponse(task, comments);
+        return new ResponseEntity<>(taskResponse, HttpStatus.OK);
     }
 
 //    @GetMapping("/owner/{id}")
@@ -53,15 +62,16 @@ public class TaskController {
 //    }
 
     @PutMapping
-    public ResponseEntity<Task> createOrUpdateTask(
-            @RequestBody TaskRequest updatedTask,
-            @RequestParam(value = "id", required = false) Long id) {
-        Task task;
-        if (id == null) {
-            task = taskService.createTaskRequest(updatedTask);
-        } else {
-            task = taskService.updateTaskRequest(updatedTask, id);
-        }
+    public ResponseEntity<Task> createTask(@RequestBody TaskRequest taskRequest) {
+        Task task = taskService.createTaskRequest(taskRequest);
+        return new ResponseEntity<>(task, HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Task> updateTask(
+            @RequestBody TaskRequest taskRequest,
+            @PathVariable Long id) {
+        Task task = taskService.updateTaskRequest(taskRequest, id);
         return new ResponseEntity<>(task, HttpStatus.OK);
     }
 
@@ -89,6 +99,14 @@ public class TaskController {
         return new ResponseEntity<>(tasks.getContent(), HttpStatus.OK);
     }
 
+    @PostMapping("/{id}")
+    public ResponseEntity<Comment> addComment(
+            @RequestBody CommentController.CommentRequest commentRequest,
+            @PathVariable Long id) {
+        Comment comment = taskService.addComentRequest(id, commentRequest);
+        return new ResponseEntity<>(comment, HttpStatus.OK);
+    }
+
 //    @PutMapping
 //    public ResponseEntity<List<Comment>> getComments() {
 //        return new ResponseEntity<>(HttpStatus.OK);
@@ -97,14 +115,19 @@ public class TaskController {
     public record TaskRequest(
             String title,
             String description,
-            Long priorityId,
-            Long statusId,
-            Long executorId) { }
+            Long priority,
+            Long status,
+            Long executor) { }
 
     public record FilterRequest(
             Long owner,
             Long executor,
             Long status,
             Long priority
+    ) { }
+
+    public record TaskResponse(
+            Task task,
+            List<Comment> comments
     ) { }
 }
