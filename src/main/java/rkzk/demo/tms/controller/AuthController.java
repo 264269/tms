@@ -21,7 +21,7 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-//    @Operation(summary = "Регистрация пользователя")
+    @Operation(summary = "Регистрация пользователя")
     @PostMapping("/sign-up")
     public JwtAuthenticationResponse signUp(@RequestBody SignUpRequest request) {
         JwtAuthenticationResponse jwt = new JwtAuthenticationResponse(authService.signUp(new UserService.UserCredentials(
@@ -31,7 +31,7 @@ public class AuthController {
         return jwt;
     }
 
-//    @Operation(summary = "Аутентификация пользователя")
+    @Operation(summary = "Аутентификация пользователя")
     @PostMapping("/sign-in")
     public JwtAuthenticationResponse signIn(@RequestBody SignInRequest request) {
         JwtAuthenticationResponse jwt
@@ -59,8 +59,8 @@ public class AuthController {
             String password) { }
 
 
-//    @Schema(description = "Ответ c токеном доступа")
+    @Schema(description = "Ответ c токеном доступа")
     public record JwtAuthenticationResponse (
-//            @Schema(description = "Токен доступа", example = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTYyMjUwNj...")
+            @Schema(description = "Токен доступа", example = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTYyMjUwNj...")
             String token) { }
 }

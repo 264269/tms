@@ -10,13 +10,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.*;
-import org.springframework.test.context.ActiveProfiles;
 import rkzk.demo.tms.controller.TaskController;
 import rkzk.demo.tms.model.CustomUser;
 import rkzk.demo.tms.model.Task;
@@ -24,7 +20,6 @@ import rkzk.demo.tms.model.persistent.Priority;
 import rkzk.demo.tms.model.persistent.TaskStatus;
 import rkzk.demo.tms.repository.TaskRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
@@ -34,7 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@ActiveProfiles("test")
 class TaskServiceIntegrationTest {
 
     @Autowired
@@ -74,44 +68,6 @@ class TaskServiceIntegrationTest {
         // Очистка контекста безопасности
         SecurityContextHolder.clearContext();
     }
-
-//    @WithSecurityContext(factory = WithCustomUserSecurityContextFactory.class)
-//    public @interface WithCustomUser {
-//        String username();
-//        String role() default "ROLE_USER";
-//    }
-//
-//    public class WithCustomUserSecurityContextFactory implements WithSecurityContextFactory<WithCustomUser> {
-//
-//        @Override
-//        public SecurityContext createSecurityContext(WithCustomUser annotation) {
-//            SecurityContext context = SecurityContextHolder.createEmptyContext();
-//
-//            CustomUser user = CustomUser.builder().
-//                    username(annotation.username()).
-//                    roles(new ArrayList<>({{add()}};));
-//                    new CustomUser(
-//                    1L,  // ID пользователя
-//                    annotation.username(),
-//                    "password",
-//                    annotation.role(),
-//                    true, // Активен
-//                    true, // Учетные данные не просрочены
-//                    true, // Учетная запись не заблокирована
-//                    true  // Аккаунт не просрочен
-//            );
-//
-//            Authentication auth = new UsernamePasswordAuthenticationToken(
-//                    user,
-//                    user.getPassword(),
-//                    user.getAuthorities()
-//            );
-//            context.setAuthentication(auth);
-//            return context;
-//        }
-//    }
-
-
 
     @Test
     @WithUserDetails(value = "owner", userDetailsServiceBeanName = "userDetailsService", setupBefore = TestExecutionEvent.TEST_EXECUTION)

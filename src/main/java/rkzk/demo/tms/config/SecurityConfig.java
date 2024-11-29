@@ -22,15 +22,13 @@ import rkzk.demo.tms.service.UserService;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity/*(debug = true)*/
 @EnableMethodSecurity
 public class SecurityConfig {
     @Autowired
     private UserService userService;
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
-//    @Autowired
-//    private UserAccessFilter userAccessFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

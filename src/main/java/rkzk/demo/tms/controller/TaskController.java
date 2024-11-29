@@ -37,30 +37,6 @@ public class TaskController {
         return new ResponseEntity<>(taskResponse, HttpStatus.OK);
     }
 
-//    @GetMapping("/owner/{id}")
-//    public ResponseEntity<List<Task>> getAuthorTasks(@PathVariable Long id) {
-//        List<Task> task = taskService.getTasksByOwnerRequest(id);
-//        return new ResponseEntity<>(task, HttpStatus.OK);
-//    }
-
-//    @GetMapping("/executor/{id}")
-//    public ResponseEntity<List<Task>> getExecutorTasks(@PathVariable Long id) {
-//        List<Task> task = taskService.getTasksByExecutorRequest(id);
-//        return new ResponseEntity<>(task, HttpStatus.OK);
-//    }
-
-//    @PutMapping("/{id}")
-//    public ResponseEntity<Task> updateTask(@RequestBody TaskRequest updatedTask, @PathVariable Long id) {
-//        Task task = taskService.updateTaskRequest(updatedTask, id);
-//        return new ResponseEntity<>(task, HttpStatus.OK);
-//    }
-//
-//    @PutMapping
-//    public ResponseEntity<Task> createTask(@RequestBody TaskRequest updatedTask) {
-//        Task task = taskService.createTaskRequest(updatedTask);
-//        return new ResponseEntity<>(task, HttpStatus.OK);
-//    }
-
     @PutMapping
     public ResponseEntity<Task> createTask(@RequestBody TaskRequest taskRequest) {
         Task task = taskService.createTaskRequest(taskRequest);

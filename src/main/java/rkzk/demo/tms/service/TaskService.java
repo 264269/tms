@@ -33,6 +33,8 @@ public class TaskService {
     @Autowired
     private CommentRepository commentRepository;
 
+//    public TaskService(PriorityInitializer )
+
     public Task getById(Long id) {
         return taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Task not found"));
     }
