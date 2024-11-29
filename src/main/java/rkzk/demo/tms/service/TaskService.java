@@ -7,6 +7,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import rkzk.demo.tms.controller.CommentController;
 import rkzk.demo.tms.controller.TaskController;
@@ -137,7 +138,7 @@ public class TaskService {
     }
 
     public Page<Task> getTasksFiltered(Specification<Task> spec, PageRequest pageRequest) {
-        System.out.println("executing spec");
+//        System.out.println("executing spec");
         return taskRepository.findAll(spec, pageRequest);
     }
     public Page<Task> getTasksFilteredRequest(TaskController.FilterRequest filter, PageRequest pageRequest) {
@@ -178,7 +179,7 @@ public class TaskService {
 
 //        setting specifications
         spec = Specification.where(TaskSpecifications.filterByOwner(owner));
-        System.out.println("spec set to " + owner);
+//        System.out.println("spec set to " + owner);
 
 
 //        if owner and executor aren't
@@ -186,7 +187,7 @@ public class TaskService {
             spec = spec.or(TaskSpecifications.filterByExecutor(executor));
         else
             spec = spec.and(TaskSpecifications.filterByExecutor(executor));
-        System.out.println("spec set to " + executor);
+//        System.out.println("spec set to " + executor);
 
 
 //        set status
@@ -195,7 +196,7 @@ public class TaskService {
             status = TaskStatus.TaskStatusEnum.getById(filter.status());
         } catch (Exception e) { }
         spec = spec.and(TaskSpecifications.filterByStatus(status));
-        System.out.println("spec set to " + status);
+//        System.out.println("spec set to " + status);
 
 
 //        set priority
@@ -204,24 +205,24 @@ public class TaskService {
             priority = Priority.PriorityEnum.getById(filter.priority());
         } catch (Exception e) { }
         spec = spec.and(TaskSpecifications.filterByPriority(priority));
-        System.out.println("spec set to " + priority);
+//        System.out.println("spec set to " + priority);
 
         return getTasksFiltered(spec, pageRequest);
     }
 
     public boolean checkAccessAsOwner(Task task) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        CustomUser authUser = (CustomUser) auth.getPrincipal();
+        CustomUser authUser = userService.getByUsername(auth.getName());
 
-        boolean owner = Objects.equals(task.getOwnerId(), authUser.getUserId());
+        boolean owner = Objects.equals(task.getOwner().getUserId(), authUser.getUserId());
 
         return owner || authUser.isAdmin();
     }
     public boolean checkAccessAsExecutor(Task task) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        CustomUser authUser = (CustomUser) auth.getPrincipal();
+        CustomUser authUser = userService.getByUsername(auth.getName());
 
-        boolean executor = Objects.equals(task.getExecutorId(), authUser.getUserId());
+        boolean executor = Objects.equals(task.getExecutor().getUserId(), authUser.getUserId());
 
         return executor || authUser.isAdmin();
     }

@@ -22,6 +22,8 @@ public class CommentService {
     private CommentRepository commentRepository;
     @Autowired
     private TaskService taskService;
+    @Autowired
+    private UserService userService;
 
     public Page<Comment> getByTask(Long taskId, PageRequest pageRequest) {
         return commentRepository.findByTaskId(taskId, pageRequest);
@@ -49,8 +51,7 @@ public class CommentService {
     }
 
     public boolean checkAccessAsOwner(Comment comment) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        CustomUser authUser = (CustomUser) auth.getPrincipal();
+        CustomUser authUser = userService.getUserFromContext();
 
         boolean owner = Objects.equals(comment.getOwnerId(), authUser.getUserId());
 
@@ -61,8 +62,7 @@ public class CommentService {
         return commentRepository.save(comment);
     }
     public Comment addCommentRequest(Long id, CommentController.CommentRequest commentRequest) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUser user = (CustomUser) authentication.getPrincipal();
+        CustomUser user = userService.getUserFromContext();
 
         Task task = taskService.getByIdRequest(id);
 

@@ -25,14 +25,14 @@ public class Comment {
 
     private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "task_id")
     @JsonIgnore
     private Task task;
     @Column(name = "task_id", insertable = false, updatable = false)
     private Long taskId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private CustomUser owner;

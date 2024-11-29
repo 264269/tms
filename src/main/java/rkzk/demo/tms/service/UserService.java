@@ -1,10 +1,12 @@
 package rkzk.demo.tms.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import rkzk.demo.tms.model.CustomUser;
 import rkzk.demo.tms.model.Task;
@@ -42,6 +44,7 @@ public class UserService {
         return save(customUser);
     }
 
+    @Bean
     public UserDetailsService userDetailsService() {
         return this::getByUsername;
     }
@@ -65,16 +68,26 @@ public class UserService {
         return customUserRepository
                 .findByUsername(username)
                 .orElseThrow(
-                        () -> new RuntimeException("User with username " + username + " not found"));
+                        () -> new UsernameNotFoundException("User with username " + username + " not found"));
     }
 
     public boolean checkAccessToUser(Long userId) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        CustomUser authUser = (CustomUser) auth.getPrincipal();
+        CustomUser authUser = getUserFromContext();
 
         boolean sameId = Objects.equals(authUser.getUserId(), userId);
 
         return sameId || authUser.isAdmin();
+    }
+
+    public CustomUser getUserFromContext() {
+        return (CustomUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+    public void deleteByUsername(String username) {
+        customUserRepository.deleteByUsername(username);
+    }
+    public void delete(CustomUser customUser) {
+        customUserRepository.delete(customUser);
     }
 
 //    public List<Task> getTasks(Long id) {

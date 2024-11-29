@@ -38,18 +38,14 @@ public class AuthService {
     public String signIn(UserService.UserCredentials request) {
         String jwt = "";
 
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                    request.username(),
-                    request.password()
-            ));
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                request.username(),
+                request.password()
+        ));
 
-            UserDetails user = userService.userDetailsService().loadUserByUsername(request.username());
+        UserDetails user = userService.userDetailsService().loadUserByUsername(request.username());
 
-            jwt = jwtService.generateToken(user);
-        } catch (Exception e) {
-            System.out.println(e);
-        }
+        jwt = jwtService.generateToken(user);
 
         return jwt;
     }

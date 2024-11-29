@@ -12,4 +12,5 @@ public interface CustomUserRepository extends JpaRepository<CustomUser, Long> {
     Optional<CustomUser> findByUsername(String username);
     boolean existsByEmail(String email);
     Optional<CustomUser> findByEmail(String email);
+    void deleteByUsername(String username);
 }

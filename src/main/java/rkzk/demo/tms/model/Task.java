@@ -28,29 +28,29 @@ public class Task {
     private String title;
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "priority")
     private Priority priority;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "status")
     private TaskStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "owner")
     @JsonIgnore
     private CustomUser owner;
     @Column(name = "owner", insertable = false, updatable = false)
     private Long ownerId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "executor")
     @JsonIgnore
     private CustomUser executor;
     @Column(name = "executor", insertable = false, updatable = false)
     private Long executorId;
 
-    @OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "task", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Comment> comments = new ArrayList<>();
 
@@ -63,7 +63,6 @@ public class Task {
         this.owner = owner;
         ownerId = owner.getUserId();
     }
-
     public void updateOwner() {
         ownerId = owner.getUserId();
     }
@@ -72,7 +71,6 @@ public class Task {
         this.executor = executor;
         executorId = executor.getUserId();
     }
-
     public void updateExecutor() {
         executorId = executor.getUserId();
     }
