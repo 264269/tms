@@ -17,7 +17,7 @@ import java.util.function.Function;
 @Service
 public class JwtService {
     private final SecretKey secretKey;
-    private final long expirationTime; // Время жизни токена (в миллисекундах)
+    private final long expirationTime;
 
     public JwtService() {
         secretKey = Jwts.SIG.HS256.key().build();
