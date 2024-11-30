@@ -57,7 +57,6 @@ class TaskServiceIntegrationTest {
                 "owner@example.com",
                 passwordEncoder.encode("password")
         ));
-        System.out.println("Created: " + testOwner);
 
         testExecutor = userService.create(new UserService.UserCredentials(
                 "executor",
@@ -102,9 +101,7 @@ class TaskServiceIntegrationTest {
                 .build();
 
         task = taskRepository.save(task);
-        System.out.println(task);
 
-        System.out.println(userService.getByUsername("executor"));
         Task fetchedTask = taskService.getByIdRequest(task.getTaskId());
 
         assertEquals(task.getTaskId(), fetchedTask.getTaskId());

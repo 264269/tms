@@ -56,4 +56,14 @@ public class Comment {
         updateOwner();
         updateTask();
     }
+
+    @PreRemove
+    public void preRemove() {
+        dismissTask();
+    }
+
+    public void dismissTask() {
+        this.task.dismissComment(this);
+        this.task = null;
+    }
 }

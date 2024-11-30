@@ -2,10 +2,8 @@ package rkzk.demo.tms.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
-import rkzk.demo.tms.controller.TaskController;
 import rkzk.demo.tms.model.persistent.Priority;
 import rkzk.demo.tms.model.persistent.TaskStatus;
 
@@ -78,5 +76,35 @@ public class Task {
     public void update() {
         updateExecutor();
         updateOwner();
+    }
+
+    @PreRemove
+    public void preRemove() {
+        dismissOwner();
+        dismissExecutor();
+        dismissAllComments();
+    }
+
+    public void dismissOwner() {
+        this.owner.dismissOwned(this);
+        this.owner = null;
+    }
+
+    public void dismissExecutor() {
+        this.executor.dismissExecuting(this);
+        this.executor = null;
+    }
+
+    public void dismissComment(Comment comment) {
+        this.comments.remove(comment);
+    }
+
+    public void dismissAllComments() {
+        if (this.comments == null) return;
+        List<Comment> copyComments = new ArrayList<>(this.comments);
+        for (Comment comment : copyComments) {
+            this.comments.remove(comment);
+        }
+        this.comments.clear();
     }
 }

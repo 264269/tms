@@ -9,10 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import rkzk.demo.tms.model.persistent.Role;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -44,7 +41,7 @@ public class CustomUser implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     @JsonIgnore
-    private List<Role> roles;
+    private List<Role> roles = new ArrayList<>();
 
     @Column(name = "enabled")
     @JsonIgnore
@@ -52,11 +49,11 @@ public class CustomUser implements UserDetails {
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<Task> ownedTasks;
+    private List<Task> ownedTasks = new ArrayList<>();
 
     @OneToMany(mappedBy = "executor", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<Task> assignedTasks;
+    private List<Task> assignedTasks = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -108,5 +105,39 @@ public class CustomUser implements UserDetails {
     @Override
     public boolean isEnabled() {
         return enabled;
+    }
+
+    @PreRemove
+    public void preRemove() {
+        dismissAllOwned();
+        dismissAllExecuting();
+    }
+
+    public void dismissAllOwned() {
+//        this.ownedTasks.forEach(Task::dismissOwner);
+        if (this.ownedTasks == null) return;
+        List<Task> ownedTasksCopy = new ArrayList<>(this.ownedTasks);
+        for (Task task : ownedTasksCopy) {
+            this.ownedTasks.remove(task);
+        }
+        this.ownedTasks.clear();
+    }
+
+    public void dismissOwned(Task task) {
+        this.ownedTasks.remove(task);
+    }
+
+    public void dismissAllExecuting() {
+//        this.assignedTasks.forEach(Task::dismissExecutor);
+        if (this.assignedTasks == null) return;
+        List<Task> assignedTasksCopy = new ArrayList<>(this.assignedTasks);
+        for (Task task : assignedTasksCopy) {
+            this.assignedTasks.remove(task);
+        }
+        this.assignedTasks.clear();
+    }
+
+    public void dismissExecuting(Task task) {
+        this.assignedTasks.remove(task);
     }
 }

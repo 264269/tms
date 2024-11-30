@@ -18,6 +18,7 @@ import java.beans.Transient;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@Transactional
 class AuthServiceTest {
 
     @Autowired
@@ -34,40 +35,6 @@ class AuthServiceTest {
 
     @Autowired
     private AuthenticationManager authenticationManager;
-
-    @BeforeEach
-    @Transactional
-    void setUp() {
-        try {
-            CustomUser newUser = userService.getByUsername("newUser");
-            userService.delete(newUser);
-        } catch (UsernameNotFoundException e) { }
-        try {
-            CustomUser testUser = userService.getByUsername("testUser");
-            userService.delete(testUser);
-        } catch (UsernameNotFoundException e) { }
-        try {
-            CustomUser invalidUser = userService.getByUsername("invalidUser");
-            userService.delete(invalidUser);
-        } catch (UsernameNotFoundException e) { }
-    }
-
-    @AfterEach
-    @Transactional
-    void TearDown() {
-        try {
-            CustomUser newUser = userService.getByUsername("newUser");
-            userService.delete(newUser);
-        } catch (UsernameNotFoundException e) { }
-        try {
-            CustomUser testUser = userService.getByUsername("testUser");
-            userService.delete(testUser);
-        } catch (UsernameNotFoundException e) { }
-        try {
-            CustomUser invalidUser = userService.getByUsername("invalidUser");
-            userService.delete(invalidUser);
-        } catch (UsernameNotFoundException e) { }
-    }
 
     @Test
     void signUp_shouldCreateUserAndReturnJwt() {
