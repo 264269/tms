@@ -1,5 +1,6 @@
 package rkzk.demo.tms.controller;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -95,6 +96,7 @@ public class TaskController {
             Long status,
             Long executor) { }
 
+    @Schema(description = "Параметры запроса")
     public record FilterRequest(
             Long owner,
             Long executor,
@@ -102,8 +104,11 @@ public class TaskController {
             Long priority
     ) { }
 
+    @Schema(description = "Ответ с информацией о задаче.")
     public record TaskResponse(
+            @Schema(description = "Задача")
             Task task,
+            @Schema(description = "Комментарии")
             List<Comment> comments
     ) { }
 }
